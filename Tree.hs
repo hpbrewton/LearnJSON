@@ -3,6 +3,7 @@ module LearnJSON.Tree (
 	Context(..),
 	mkTree, 
 	preficies,
+	preficiesSet,
 	indicies,
 	sufficies,
 	clearCntxt
@@ -12,7 +13,7 @@ import qualified Data.Set as S
 
 data Tree a = Tree a [Tree a]
 	| EmptyTree
-	deriving (Show, Ord, Eq)
+	deriving (Show, Ord, Eq, Read)
 
 data Context a = Context [Int] (Tree a)
 	| NoContext
@@ -28,7 +29,12 @@ mkTree (Context (x:xs) (Tree v cs)) tree  = Tree v ((left) ++ middle : (right))
 		middle = mkTree (Context xs m) tree 
 
 preficies :: Tree a -> [Tree a]
+preficies EmptyTree = []
 preficies tree@(Tree _ cs) = tree : concatMap preficies cs 
+
+preficiesSet :: (Ord a) => Tree a -> S.Set (Tree a)
+preficiesSet EmptyTree = S.empty
+preficiesSet tree@(Tree _ cs) = S.insert tree $ S.unions $ map preficiesSet cs 
 
 indicies :: Tree a -> [(Tree a, [Int])]
 indicies tree = map (\(t, path) -> (t, reverse path)) $ indiciesAux tree $ [] 
