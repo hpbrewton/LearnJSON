@@ -1,4 +1,4 @@
-module LearnJSON.Tree (
+module Tree (
 	Tree(..),
 	Context(..),
 	mkTree, 
